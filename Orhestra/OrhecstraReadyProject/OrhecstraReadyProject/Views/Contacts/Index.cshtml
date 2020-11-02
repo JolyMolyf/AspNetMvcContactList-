@@ -1,0 +1,309 @@
+﻿@model IEnumerable<OrhecstraReadyProject.Data.Contact>
+
+<h1>Contacts</h1>
+
+
+
+@{
+    string[] Headers = new string[] {
+        "ID",
+        "Name",
+        "Date of Birth",
+        "Married",
+        "Phone",
+        "salary"
+
+    };
+}
+
+
+
+
+
+
+
+
+
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<div>
+    <h4>File upload</h4>
+
+
+    <form asp-controller="Contacts" asp-action="SingleFile" enctype="multipart/form-data" method="post">
+        <input type="file" name="contactFile" />
+        <button type="submit">Submit</button>
+    </form>
+    <div class="order-table-wrapper">
+        <input id="IndexColSort" placeholder="Write index of col to sort by" />
+        <input id ="sortBtn" type="button"  value="Sort"/>
+
+        <p id="showData"></p>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/js/contactJs.js"></script>
+
+<script>
+
+
+
+    var column; 
+
+
+
+
+
+ var json = @ViewBag.arr;
+
+    console.log(json);
+    var rows = [];
+    function fillTable(json) {
+        sorted = [];
+        var col = [];
+        for (var i = 0; i < json.length; i++) {
+            for (var key in json[i]) {
+                if (col.indexOf(key) === -1) {
+                    col.push(key);
+                }
+            }
+        }
+
+        var table = document.createElement("table");
+
+        var tr = table.insertRow(-1);
+
+        for (var i = 0; i < col.length; i++) {
+            var th = document.createElement("th");      // TABLE HEADER.
+            th.innerHTML = col[i];
+            tr.appendChild(th);
+        }
+
+       
+
+        for (var i = 0; i < json.length; i++) {
+
+            tr = table.insertRow(-1);
+            var arr = [];
+            for (var j = 0; j < col.length; j++) {
+
+                var tabCell = tr.insertCell(-1);
+                tabCell.innerHTML = json[i][col[j]];
+                rows.push(json[i][col[j]]);
+
+            }
+
+
+        }
+
+        // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+        var divContainer = document.getElementById("showData");
+        divContainer.innerHTML = "";
+        divContainer.appendChild(table);
+    
+    }
+
+    fillTable(json);
+
+
+    var sorted = []
+    function sortData(column) {
+   
+       
+
+
+
+       
+        console.log(rows + " initial sorted");
+        for (var i = 0; i < rows.length; i += 6) {
+
+
+          
+
+            console.log(rows[i + 1]);
+            var con =  {
+              
+                     id: rows[i],
+                     firstName: rows[i + 1],
+                     dataofbirth: rows[i + 2],
+                     married: rows[i + 3],
+                     phone: rows[i + 4], 
+                     salary: rows[i + 5], 
+                
+            };
+ 
+
+
+            console.log(con)
+            sorted.push(con); 
+
+        }
+        
+
+        console.log(sorted);
+        console.log(sorted[0].firstName + " user name");
+        console.log(sorted[0].salary + " user name");
+
+
+
+     
+
+        if (column == 0) {
+
+            sorted.sort(compareById)
+
+        }
+        if (column == 1) {
+
+            sorted.sort(compareByName);
+
+        }
+        if (column == 2) {
+            sorted.sort(compareByDataofBirth);
+        }
+        if (column == 3) {
+            sorted.sort(compareByMarried);
+           
+        }
+        if (column == 4) {
+            sorted.sort(compareByPhone);
+       
+        }
+        if (column == 5) {
+            sorted.sort(compareBySalary);
+        }
+
+
+
+
+        console.log("--------");
+        console.log(sorted[0].firstName + " user name");
+        console.log(sorted[0].salary + " user name");
+
+    
+        rows = [];
+    }
+
+
+    function  compareByName(a, b) {
+
+        if (a.firstName > b.firstName) {
+            console.log(a + " from compare");
+            return 1;
+        } else if (a.firstName == b.firstName) {
+           
+            console.log("the are equal");
+            return 0;
+        } else {
+
+         
+            console.log(b + " from compare");
+            return -1;
+        }
+
+    }
+
+    function compareById(a, b) {
+
+        if (a.id > b.id) {
+            console.log(a + " from compare");
+            return 1;
+        } else if (a.id == b.id) {
+
+            console.log("the are equal");
+            return 0;
+        } else {
+
+
+            console.log(b + " from compare");
+            return -1;
+        }
+
+    }
+    function compareByDataofBirth(a, b) {
+
+        if (a.dataofbirth > b.dataofbirth) {
+            console.log(a + " from compare");
+            return 1;
+        } else if (a.dataofbirth == b.dataofbirth) {
+
+            console.log("the are equal");
+            return 0;
+        } else {
+
+
+            console.log(b + " from compare");
+            return -1;
+        }
+
+    }
+    function compareBySalary(a, b) {
+
+        if (a.salary > b.salary) {
+            console.log(a + " from compare");
+            return 1;
+        } else if (a.salary == b.salary) {
+
+            console.log("the are equal");
+            return 0;
+        } else {
+
+
+            console.log(b + " from compare");
+            return -1;
+        }
+
+    }
+    function compareByPhone(a, b) {
+
+        if (a.phone > b.phone) {
+            console.log(a + " from compare");
+            return 1;
+        } else if (a.phone == b.phone) {
+
+            console.log("the are equal");
+            return 0;
+        } else {
+
+
+            console.log(b + " from compare");
+            return -1;
+        }
+
+    }
+
+    $('#sortBtn').click(function () {
+       
+        $('#IndexColSort').val(function (index, value) {
+         
+            sortData(value);
+            fillTable(sorted);
+     
+           
+     
+           
+        });
+
+    })
+
+
+ 
+   
+
+  
+  
+
+</script>
+
+
+
+
+
+
+
+
+
